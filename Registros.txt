@@ -1,0 +1,116 @@
+--- CREATE --- 
+
+delimiter //
+create procedure inserirlivro(
+    in p_isbn varchar(20),
+    in p_titulo varchar(255),
+    in p_genero varchar(50),
+    in p_anopublicacao year,
+    in p_copiasdisponiveis int
+)
+begin
+    insert into livro (isbn, titulo, genero, anopublicacao, copiasdisponiveis)
+    values (p_isbn, p_titulo, p_genero, p_anopublicacao, p_copiasdisponiveis);
+end;
+//
+delimiter ;
+
+
+--- LER ---
+
+MariaDB [biblioteca]> SELECT * FROM Livro WHERE Genero = 'Aventura';
++----------------+--------------------+----------+---------------+-------------------+
+| ISBN           | Titulo             | Genero   | AnoPublicacao | CopiasDisponiveis |
++----------------+--------------------+----------+---------------+-------------------+
+| 978-2222222222 | Aventura no Espa?o | Aventura |          2021 |                 4 |
+| 978-9876543210 | Aventura Maluca    | Aventura |          2018 |                 3 |
++----------------+--------------------+----------+---------------+-------------------+
+2 rows in set (0.001 sec)
+
+---
+
+SELECT * FROM Autor WHERE PaisOrigem = 'Brasil';
++---------+--------------+----------------+------------+
+| AutorID | NomeAutor    | DataNascimento | PaisOrigem |
++---------+--------------+----------------+------------+
+|       1 | Jo?o Autor   | 1980-05-15     | Brasil     |
+|       4 | Carlos Autor | 1970-12-05     | Brasil     |
++---------+--------------+----------------+------------+
+2 rows in set (0.000 sec)
+
+---
+
+MariaDB [biblioteca]> SELECT E.*, L.Titulo AS TituloLivro, U.NomeUsuario AS NomeUsuario
+    -> FROM Emprestimo E
+    -> JOIN Livro L ON E.ISBN = L.ISBN
+    -> JOIN Usuario U ON E.UserID = U.UserID;
++--------------+----------------+--------+----------------+-----------------------+------------------------+---------------+
+| EmprestimoID | ISBN           | UserID | DataEmprestimo | DataDevolucaoPrevista | TituloLivro            | NomeUsuario   |
++--------------+----------------+--------+----------------+-----------------------+------------------------+---------------+
+|            3 | 978-1111111111 |      3 | 2023-09-22     | 2023-09-29            | Mist?rio da Biblioteca | Eva Leitora   |
+|            1 | 978-1234567890 |      1 | 2023-09-20     | 2023-09-27            | Livro Engra?ado        | Alice Leitora |
+|            4 | 978-2222222222 |      4 | 2023-09-21     | 2023-09-28            | Aventura no Espa?o     | Daniel Leitor |
+|            2 | 978-9876543210 |      2 | 2023-09-18     | 2023-09-25            | Aventura Maluca        | Bob Leitor    |
++--------------+----------------+--------+----------------+-----------------------+------------------------+---------------+
+4 rows in set (0.001 sec)
+
+MariaDB [biblioteca]>
+
+--- UPDATE ---
+
+MariaDB [biblioteca]> update livro
+    -> set titulo = 'livro cômico', copiasdisponiveis = 7
+    -> where isbn = '978-1234567890';
+Query OK, 1 row affected, 1 warning (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+--- 
+
+MariaDB [biblioteca]> UPDATE Autor
+    -> SET PaisOrigem = 'Brasil'
+    -> WHERE AutorID = 3;
+Query OK, 1 row affected (0.002 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+---
+
+MariaDB [biblioteca]> UPDATE Usuario
+    -> SET Endereco = 'Nova Rua, 456', NumeroTelefone = '+55 11 8888-8888'
+    -> WHERE UserID = 1;
+Query OK, 1 row affected (0.002 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+---
+
+MariaDB [biblioteca]> UPDATE Emprestimo
+    -> SET DataDevolucaoPrevista = '2023-10-05'
+    -> WHERE EmprestimoID = 1;
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+--- DELETE ---
+
+MariaDB [biblioteca]> DELETE FROM Autor
+    -> WHERE AutorID = 4;
+Query OK, 0 rows affected (0.000 sec)
+
+---
+
+MariaDB [biblioteca]> DELETE FROM Emprestimo
+    -> WHERE EmprestimoID = 2;
+Query OK, 1 row affected (0.002 sec)
+
+--- 
+
+MariaDB [biblioteca]> DELETE FROM Emprestimo
+    -> WHERE EmprestimoID = 2;
+Query OK, 0 rows affected (0.000 sec)
+
+--- 
+
+MariaDB [biblioteca]> DELETE FROM Livro
+    -> WHERE ISBN = '978-9876543210';
+Query OK, 1 row affected (0.001 sec)
+
+MariaDB [biblioteca]>
+
